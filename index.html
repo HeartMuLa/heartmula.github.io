@@ -1,455 +1,284 @@
 <!DOCTYPE html>
 <html>
+    
 <head>
   <meta charset="utf-8">
-  <meta name="description"
-        content="Deformable Neural Radiance Fields creates free-viewpoint portraits (nerfies) from casually captured videos.">
-  <meta name="keywords" content="Nerfies, D-NeRF, NeRF">
+  <meta name="description" content="HeartMuLa: A Family of Open Sourced Music Foundation Models">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nerfies: Deformable Neural Radiance Fields</title>
+  <title>HeartMuLa: Music Foundation Models</title>
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-
-    gtag('js', new Date());
-
-    gtag('config', 'G-PYVRSFMDRL');
-  </script>
-
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
-        rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
   <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
   <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="icon" href="./static/images/favicon.svg">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
-  <script src="./static/js/index.js"></script>
+
+  <style>
+    body {
+      background-color: #ffffff;
+      background-color: #ffffff;
+    }
+
+    .content-block {
+      background-color: #ffffff;
+      border: 1px solid #e1e4e8;
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* 表头样式：左边歌词，右边统一叫 Audio Samples */
+    .table thead th {
+      color: #ffffff !important;
+      background-color: #363636 !important;
+      vertical-align: middle !important;
+      text-align: center;
+      border-bottom-width: 0;
+      font-size: 1.1em;
+    }
+    
+    /* 单元格样式 */
+    .table td {
+      vertical-align: middle !important; /* 垂直居中 */
+      text-align: center;
+      border: 1px solid #dbdbdb;
+      padding: 15px; /* 增加内边距，让内容不拥挤 */
+    }
+    
+    /* 歌词列左对齐 */
+    .table td:first-child { 
+      text-align: left; 
+    }
+
+    /* 模型名称标签样式 */
+    .model-tag {
+        display: block;
+        font-weight: bold;
+        color: #4a4a4a;
+        margin-bottom: 8px;
+        font-size: 0.95em;
+        background-color: #f0f2f5; /* 浅灰背景 */
+        padding: 4px 8px;
+        border-radius: 4px;
+        display: inline-block; /* 包裹文字 */
+    }
+
+    .columns.is-stretch {
+      align-items: stretch;
+      width: 100%;
+      margin: 0;
+    }
+
+    .publication-title {
+      font-family: 'Google Sans', sans-serif;
+    }
+
+    .container.is-fluid {
+      max-width: 1600px !important; 
+      margin: 0 auto;
+      padding-left: 32px;
+      padding-right: 32px;
+    }
+    
+    /* 播放器样式：宽度100%，但在大屏上不要宽得离谱 */
+    audio {
+        width: 100%;
+        min-width: 200px;
+        max-width: 300px; /* 限制最大宽度，防止在超宽屏上太丑 */
+        margin-top: 5px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .content-block { padding: 1.5rem; margin-bottom: 1rem; }
+      .container.is-fluid { padding-left: 16px; padding-right: 16px; }
+      /* 手机上隐藏 rowspan 效果，改为堆叠（可选，这里保持默认表格行为） */
+    }
+  </style>
 </head>
+
 <body>
-
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-  <div class="navbar-menu">
-    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="https://keunhong.com">
-      <span class="icon">
-          <i class="fas fa-home"></i>
-      </span>
-      </a>
-
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link">
-          More Research
-        </a>
-        <div class="navbar-dropdown">
-          <a class="navbar-item" href="https://hypernerf.github.io">
-            HyperNeRF
-          </a>
-          <a class="navbar-item" href="https://nerfies.github.io">
-            Nerfies
-          </a>
-          <a class="navbar-item" href="https://latentfusion.github.io">
-            LatentFusion
-          </a>
-          <a class="navbar-item" href="https://photoshape.github.io">
-            PhotoShape
-          </a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</nav>
-
 
 <section class="hero">
   <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">HeartMuLa: A Family of Open Sourced Music
-            Foundation Models</h1>
-          <div class="is-size-5 publication-authors">
-            <!-- <span class="author-block">
-              <a href="https://keunhong.com">Keunhong Park</a><sup>1</sup>,</span> -->
-          </div>
+    <div class="container is-fluid has-text-centered">
+      <img src="static/images/logo.png" alt="HeartMuLa Logo" style="max-width: 160px; margin-bottom: 2rem;">
+      <h1 class="title is-1 publication-title" style="margin-bottom: 1.5rem; color: #333;">
+        HeartMuLa: A Family of Open Sourced Music<br>Foundation Models
+      </h1>
+      <div class="publication-links">
+        <span class="link-block">
+          <a href="#" class="external-link button is-normal is-rounded is-dark">
+            <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span>
+          </a>
+        </span>
+        <span class="link-block">
+          <a href="#" class="external-link button is-normal is-rounded is-dark">
+            <span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span>
+          </a>
+        </span>
+        <span class="link-block">
+          <a href="#" class="external-link button is-normal is-rounded is-dark">
+            <span class="icon"><i class="fab fa-github"></i></span><span>Code</span>
+          </a>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
 
-          <div class="is-size-5 publication-authors">
-            <!-- <span class="author-block"><sup>1</sup>University of Washington,</span>
-            <span class="author-block"><sup>2</sup>Google Research</span> -->
-          </div>
-
-          <div class="column has-text-centered">
-            <div class="publication-links">
-              <!-- PDF Link. -->
-              <span class="link-block">
-                <a href=""
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href=""
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-              <!-- Video Link. -->
-              <span class="link-block">
-                <a href=""
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-youtube"></i>
-                  </span>
-                  <span>Video</span>
-                </a>
-              </span>
-              <!-- Code Link. -->
-              <span class="link-block">
-                <a href=""
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-              <!-- Dataset Link. -->
-              <span class="link-block">
-                <a href=""
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="far fa-images"></i>
-                  </span>
-                  <span>Data</span>
-                  </a>
+<section class="section" style="padding-top: 0;">
+  <div class="container is-fluid">
+    <div class="columns is-stretch">
+        <div class="column is-5">
+            <div class="content-block">
+              <h2 class="title is-3">Abstract</h2>
+              <div class="content has-text-justified">
+                <p>             
+                    We present a family of open-source Music Foundation Models designed to advance large-scale music understanding and generation across diverse tasks and modalities. Our framework consists of four major components:
+                </p>
+                <ul>
+                  <li><strong>HeartCLAP:</strong> an audio–text alignment model that establishes a unified embedding space for music descriptions and cross-modal retrieval.</li>
+                  <li><strong>HeartCodec:</strong> a low-frame-rate (12.5 Hz) yet high-fidelity music codec tokenizer that captures long-range musical structure while preserving fine-grained acoustic details and enabling efficient autoregressive modeling.</li>
+                  <li><strong>HeartTranscriptor:</strong> a robust lyric recognition model optimized for real-world music scenarios.</li>
+                  <li><strong>HeartMuLa:</strong> an LLM-based song generation model capable of synthesizing high-fidelity music under rich, user-controllable conditions. HeartMuLa supports multi-conditional music creation with inputs including textual style descriptions, lyrics, and reference audio</li>
+                </ul>
+                <p>
+                    In addition, it provides two specialized modes:
+                </p>
+                <ul>
+                    <li><strong>HeartCLAP:</strong> fine-grained musical attribute control, which allows users to specify the style of different song sections (e.g., intro, verse, chorus) using natural language prompts.</li>
+                    <li><strong>HeartCodec:</strong> short, engaging music generation, which is suitable as background music for short videos. </li>
+                  </ul>
+              </div>
             </div>
+        </div>
+      <div class="column is-7">
+        <div class="content-block" style="justify-content: center; align-items: center;">
+          <h2 class="title is-3 has-text-centered" style="margin-bottom: 1rem;">Framework</h2>
+          <img src="./static/images/overview.png" alt="HeartMuLa Framework" style="width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <p class="has-text-centered is-size-7 has-text-grey mt-3">Figure 1: The architecture of HeartMuLa ecosystem.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<section class="section" style="padding-top: 0;">
+  <div class="container is-fluid">
+    <div class="content-block">
+      <h2 class="title is-3 has-text-centered mb-5">Song Generation Comparison</h2>
+      
+      <div class="table-container">
+        <table class="table is-hoverable is-bordered" style="width: 100%;">
+          <thead>
+            <tr>
+              <th style="width: 40%;">Lyrics (Input)</th>
+              <th colspan="3" style="width: 60%;">Generated Audio Samples</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <tr>
+              <td rowspan="2">
+                <details open> <summary style="font-weight: bold; cursor: pointer; color: #3273dc; margin-bottom: 10px;">
+                    <span class="icon"><i class="fas fa-magic"></i></span> Click to Collapse Lyrics
+                  </summary>
+                  <div class="content is-small" style="text-align: left; max-height: 280px; overflow-y: auto; line-height: 1.6;">
+                    <strong>[Intro]</strong><br>
+                    窗外的雨还在下个不停<br>
+                    像在嘲笑我此刻的冷清<br><br>
+                    <strong>[Verse]</strong><br>
+                    这把伞遮不住寒意侵袭<br>
+                    路灯拉长了孤单的身影<br>
+                    手机屏幕亮起又熄灭<br>
+                    再也等不到你的讯息<br><br>
+                    <strong>[Prechorus]</strong><br>
+                    说是为了我好才选择分离<br>
+                    泪水混着雨水流进心里<br>
+                    原来承诺真的不堪一击<br><br>
+                    <strong>[Chorus]</strong><br>
+                    在这冰冷的雨夜彻底失去你<br>
+                    回忆像刀片划过每一寸呼吸<br>
+                    曾经的誓言如今碎落满地<br>
+                    只剩我一个人在雨中哭泣<br><br>
+                  </div>
+                </details>
+              </td>
+
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Suno v4.5</span>
+                <audio controls><source src="static/audios/heartmula/chinese-1.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Mureka O1</span>
+                <audio controls><source src="static/audios/heartmula/chinese-1.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">YUE</span>
+                <audio controls><source src="static/audios/heartmula/chinese-1.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="width: 20%;">
+                <span class="model-tag">DiffRhythm</span>
+                <audio controls><source src="static/audios/heartmula/chinese-1.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">ACE-Step</span>
+                <audio controls><source src="static/audios/heartmula/chinese-1.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">LeVo</span>
+                <audio controls><source src="static/audios/heartmula/chinese-1.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 0;">
+  <div class="container is-fluid">
+    <div class="columns is-stretch">
+      <div class="column is-6">
+        <div class="content-block">
+          <h2 class="title is-3">Related Links</h2>
+          <div class="content">
+            <ul style="list-style-type: disc; margin-left: 1.5rem;">
+              <li style="margin-bottom: 10px;"><a href="#"><strong>HeartCLAP:</strong> Text-Audio Alignment</a></li>
+              <li style="margin-bottom: 10px;"><a href="#"><strong>HeartCodec:</strong> High Fidelity Audio Codec</a></li>
+              <li style="margin-bottom: 10px;"><a href="#"><strong>HeartTranscriptor:</strong> Lyric Transcription</a></li>
+            </ul>
+            <p style="margin-top: 1rem;">Check out our <a href="#">GitHub repository</a> for more details.</p>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- <section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <video id="teaser" autoplay muted loop playsinline height="100%">
-        <source src="./static/videos/teaser.mp4"
-                type="video/mp4">
-      </video>
-      <h2 class="subtitle has-text-centered">
-        <span class="dnerf">Nerfies</span> turns selfie videos from your phone into
-        free-viewpoint
-        portraits.
-      </h2>
-    </div>
-  </div>
-</section> -->
-
-
-<!-- <section class="hero is-light is-small">
-  <div class="hero-body">
-    <div class="container">
-      <div id="results-carousel" class="carousel results-carousel">
-        <div class="item item-steve">
-          <video poster="" id="steve" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/steve.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-chair-tp">
-          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/chair-tp.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-shiba">
-          <video poster="" id="shiba" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/shiba.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-fullbody">
-          <video poster="" id="fullbody" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/fullbody.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-blueshirt">
-          <video poster="" id="blueshirt" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/blueshirt.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-mask">
-          <video poster="" id="mask" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/mask.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-coffee">
-          <video poster="" id="coffee" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/coffee.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-toby">
-          <video poster="" id="toby" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/toby2.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
-  </div>
-</section> -->
-
-
-<section class="section" style="padding-top: 0px; padding-bottom: 0px;">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column has-text-centered">
-        <img src="static/images/logo.png" alt="LeVo Logo" style="max-width: 300px; height: auto;">
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <!-- Abstract. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            We present a family of open-source Music Foundation Models designed to advance large-scale music understanding and generation across diverse tasks and modalities. Our framework consists of four major components: (1) HeartCLAP, an audio–text alignment model that establishes a unified embedding space for music descriptions and cross-modal retrieval; (2) HeartCodec, a low-frame-rate (12.5 Hz) yet high-fidelity music codec tokenizer that captures long-range musical structure while preserving fine-grained acoustic details and enabling efficient autoregressive modeling; (3) HeartTranscriptor, a robust lyric recognition model optimized for real-world music scenarios; and (4) HeartMuLa, an LLM-based song generation model capable of synthesizing high-fidelity music under rich, user-controllable conditions. HeartMuLa supports multi-conditional music creation with inputs including textual style descriptions, lyrics, and reference audio. In addition, it provides two specialized modes: (i) fine-grained musical attribute control, which allows users to specify the style of different song sections (e.g., intro, verse, chorus) using natural language prompts; and (ii) short, engaging music generation, which is suitable as background music for short videos.
-          </p>
-          <p>
-            Together, this suite of models forms an extensible open-source ecosystem that unifies music understanding, alignment, and controllable generation. We expect these foundation models to serve as strong baselines for future research and to facilitate practical applications in multimodal content production.
-          </p>
-        </div>
-      </div>
-    </div>
-    <!--/ Abstract. -->
-
-    <!-- Paper video. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Table of Contents</h2>
-        <div class="Table of Contents">
-          <ul>
-            <li><a href="#demo"><b>Song Generation</b></a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <!--/ Paper video. -->
-  </div>
-
-
-</section>
-<section id="demo" class="hero">
-  <div class="hero-body">
-    <div class="container is-fluid">
-      
-      <div class="columns is-centered is-gapless has-text-centered">
-        <div class="column is-four-fifths">
-          <h2 class="title is-3">Song Generation</h2>
-        </div>
-      </div>
-
-      <div class="columns is-centered is-gapless has-text-centered">
-        <div class="column is-full">
-          
-          <table class="table is-hoverable" style="width: 100%; background-color: transparent;">
-            <thead>
-              <tr>
-                <th align="center"><strong>Lyrics</strong></th>
-                <th align="center"><strong>Suno v4.5</strong></th>
-                <th align="center"><strong>Mureka O1</strong></th>
-                <th align="center"><strong>YUE</strong></th>
-                <th align="center"><strong>DiffRhythm</strong></th>
-                <th align="center"><strong>ACE-Step</strong></th>
-                <th align="center" class="levo-th"><strong>LeVo</strong></th>
-              </tr>
-            </thead>
-            <tbody>
-              
-              <tr style="background-color: #f5f5f5;">
-                <td colspan="7" style="text-align: left; font-weight: bold;">
-                  <span class="icon"><i class="fas fa-magic"></i></span> Chinese
-                </td>
-              </tr>
-
-              <tr>
-                <td width="30%" style="text-align: left; vertical-align: middle;">
-                  <details>
-                    <summary style="cursor: pointer;">Click to show lyrics</summary>
-                    <div class="lyrics-content" style="margin-top: 10px; font-size: 0.9em;">
-                      <span class="lyrics-section" style="font-weight: bold; color: #666;">[Intro]</span><br>
-                      窗外的雨还在下个不停<br>
-                      像在嘲笑我此刻的冷清<br>
-                      <br>
-                      <span class="lyrics-section" style="font-weight: bold; color: #666;">[Verse]</span><br>
-                      这把伞遮不住寒意侵袭<br>
-                      路灯拉长了孤单的身影<br>
-                      手机屏幕亮起又熄灭<br>
-                      再也等不到你的讯息<br>
-                      <br>
-                      <span class="lyrics-section" style="font-weight: bold; color: #666;">[Prechorus]</span><br>
-                      说是为了我好才选择分离<br>
-                      泪水混着雨水流进心里<br>
-                      原来承诺真的不堪一击<br>
-                      <br>
-                      <span class="lyrics-section" style="font-weight: bold; color: #666;">[Chorus]</span><br>
-                      在这冰冷的雨夜彻底失去你<br>
-                      回忆像刀片划过每一寸呼吸<br>
-                      曾经的誓言如今碎落满地<br>
-                      只剩我一个人在雨中哭泣<br>
-                      <br>
-                      <span class="lyrics-section" style="font-weight: bold; color: #666;">[Verse]</span><br>
-                      街角的咖啡店依然在营业<br>
-                      只是少了两个人的喜悦<br>
-                      我们走过的路变成结界<br>
-                      困住了我在原地妥协<br>
-                      <br>
-                      <span class="lyrics-section" style="font-weight: bold; color: #666;">[Chorus]</span><br>
-                      在这漫长的雨夜终于失去你<br>
-                      爱意随风散去没有任何痕迹<br>
-                      也许放手才是最好的结局<br>
-                      让我最后一次在梦里想你<br>
-                    </div>
-                  </details>
-                </td>
-
-                <td width="11%" style="text-align: center; vertical-align: middle;">
-                  <audio controls style="width: 100%;">
-                    <source src="static/audios/heartmula/chinese-1.mp3" type="audio/mpeg">
-                  </audio>
-                </td>
-                <td width="11%" style="text-align: center; vertical-align: middle;">
-                  <audio controls style="width: 100%;">
-                    <source src="static/audios/heartmula/chinese-1.mp3" type="audio/mpeg">
-                  </audio>
-                </td>
-                <td width="11%" style="text-align: center; vertical-align: middle;">
-                  <audio controls style="width: 100%;">
-                    <source src="static/audios/heartmula/chinese-1.mp3" type="audio/mpeg">
-                  </audio>
-                </td>
-                <td width="11%" style="text-align: center; vertical-align: middle;">
-                  <audio controls style="width: 100%;">
-                    <source src="static/audios/heartmula/chinese-1.mp3" type="audio/mpeg">
-                  </audio>
-                </td>
-                <td width="11%" style="text-align: center; vertical-align: middle;">
-                  <audio controls style="width: 100%;">
-                    <source src="static/audios/heartmula/chinese-1.mp3" type="audio/mpeg">
-                  </audio>
-                </td>
-                <td width="11%" style="text-align: center; vertical-align: middle;">
-                  <audio controls style="width: 100%;">
-                    <source src="static/audios/heartmula/chinese-1.mp3" type="audio/mpeg">
-                  </audio>
-                </td>
-              </tr>
-              
-              </tbody> </table> </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- <section>
-    <Concurrent Work>
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Related Links</h2>
-
-        <div class="content has-text-justified">
-        </div>
-      </div>
-    </div>
-    </Concurrent Work>
-
-  </div>
-</section> -->
-
-
-<section class="section" id="BibTeX">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
-    <pre><code>@article{park2021nerfies,
-  author    = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
-  title     = {Nerfies: Deformable Neural Radiance Fields},
-  journal   = {ICCV},
-  year      = {2021},
+      <div class="column is-6">
+        <div class="content-block">
+          <h2 class="title is-3">BibTeX</h2>
+          <pre style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; font-size: 0.8em;"><code>@article{heartmula2025,
+  author    = {Your Name and Others},
+  title     = {HeartMuLa: A Family of Open Sourced Music Foundation Models},
+  journal   = {arXiv preprint},
+  year      = {2025},
 }</code></pre>
-  </div>
-</section>
-
-
-<footer class="footer">
-  <div class="container">
-    <div class="content has-text-centered">
-      <a class="icon-link"
-         href="./static/videos/nerfies_paper.pdf">
-        <i class="fas fa-file-pdf"></i>
-      </a>
-      <a class="icon-link" href="https://github.com/keunhong" class="external-link" disabled>
-        <i class="fab fa-github"></i>
-      </a>
-    </div>
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>
-            This website is licensed under a <a rel="license"
-                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.
-          </p>
-          <p>
-            This means you are free to borrow the <a
-              href="https://github.com/nerfies/nerfies.github.io">source code</a> of this website,
-            we just ask that you link back to this page in the footer.
-            Please remember to remove the analytics code included in the header of the website which
-            you do not want on your website.
-          </p>
         </div>
       </div>
     </div>
   </div>
-</footer>
+</section>
+
+
 
 </body>
 </html>
