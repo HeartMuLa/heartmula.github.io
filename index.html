@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="HeartMuLa: A Family of Open Sourced Music Foundation Models">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HeartMuLa: Music Foundation Models</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+
+  <style>
+    body {
+      background-color: #F5F0E4;
+      background-color: #F5F0E4;
+    }
+
+    .content-block {
+      background-color: #ffffff;
+      border: 1px solid #e1e4e8;
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* 表头样式：左边歌词，右边统一叫 Audio Samples */
+    .table thead th {
+      color: #ffffff !important;
+      background-color: #000000 !important;
+      vertical-align: middle !important;
+      text-align: center;
+      border-bottom-width: 0;
+      font-size: 1.1em;
+    }
+    
+    /* 单元格样式 */
+    .table td {
+      vertical-align: middle !important; /* 垂直居中 */
+      text-align: center;
+      border: 1px solid #dbdbdb;
+      padding: 15px; /* 增加内边距，让内容不拥挤 */
+    }
+    
+    /* 歌词列左对齐 */
+    .table td:first-child { 
+      text-align: left; 
+    }
+
+    /* 模型名称标签样式 */
+    .model-tag {
+        display: block;
+        font-weight: bold;
+        color: #4a4a4a;
+        margin-bottom: 8px;
+        font-size: 0.95em;
+        background-color: #f0f2f5; /* 浅灰背景 */
+        padding: 4px 8px;
+        border-radius: 4px;
+        display: inline-block; /* 包裹文字 */
+    }
+
+    .columns.is-stretch {
+      align-items: stretch;
+      width: 100%;
+      margin: 0;
+    }
+
+    .publication-title {
+      font-family: 'Google Sans', sans-serif;
+    }
+
+    .container.is-fluid {
+      max-width: 1600px !important; 
+      margin: 0 auto;
+      padding-left: 32px;
+      padding-right: 32px;
+    }
+    
+    /* 播放器样式：宽度100%，但在大屏上不要宽得离谱 */
+    audio {
+        width: 100%;
+        min-width: 200px;
+        max-width: 300px; /* 限制最大宽度，防止在超宽屏上太丑 */
+        margin-top: 5px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .content-block { padding: 1.5rem; margin-bottom: 1rem; }
+      .container.is-fluid { padding-left: 16px; padding-right: 16px; }
+      /* 手机上隐藏 rowspan 效果，改为堆叠（可选，这里保持默认表格行为） */
+    }
+  </style>
+</head>
+
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-fluid has-text-centered">
+      <img src="static/images/logo.png" alt="HeartMuLa Logo" style="max-width: 160px; margin-bottom: 2rem;">
+      <h1 class="title is-1 publication-title" style="margin-bottom: 1.5rem; color: #333;">
+        HeartMuLa: A Family of Open Sourced Music<br>Foundation Models
+      </h1>
+      <div class="publication-links">
+        <span class="link-block">
+          <a href="#" class="external-link button is-normal is-rounded is-dark">
+            <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper(Coming Soon)</span>
+          </a>
+        </span>
+        <!-- <span class="link-block">
+          <a href="#" class="external-link button is-normal is-rounded is-dark">
+            <span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span>
+          </a>
+        </span> -->
+        <span class="link-block">
+          <a href="https://github.com/HeartMuLa" class="external-link button is-normal is-rounded is-dark">
+            <span class="icon"><i class="fab fa-github"></i></span><span>Code</span>
+          </a>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 0;">
+  <div class="container is-fluid">
+    <div class="columns is-stretch">
+        <div class="column is-6">
+            <div class="content-block">
+              <h2 class="title is-3 has-text-centered" style="margin-top: 1rem;">Abstract</h2>
+              <div class="content has-text-justified">
+                <p>             
+                    We present a family of open-source Music Foundation Models designed to advance large-scale music understanding and generation across diverse tasks and modalities. Our framework consists of four major components:
+                </p>
+                <ul>
+                  <li><strong>HeartCLAP:</strong> an audio–text alignment model that establishes a unified embedding space for music descriptions and cross-modal retrieval.</li>
+                  <li><strong>HeartCodec:</strong> a low-frame-rate (12.5 Hz) yet high-fidelity music codec tokenizer that captures long-range musical structure while preserving fine-grained acoustic details and enabling efficient autoregressive modeling.</li>
+                  <li><strong>HeartTranscriptor:</strong> a robust lyric recognition model optimized for real-world music scenarios.</li>
+                  <li><strong>HeartMuLa:</strong> an LLM-based song generation model capable of synthesizing high-fidelity music under rich, user-controllable conditions. HeartMuLa supports multi-conditional music creation with inputs including textual style descriptions, lyrics, and reference audio</li>
+                </ul>
+                <p>
+                    In addition, it provides two specialized modes:
+                </p>
+                <ul>
+                    <li>fine-grained musical attribute control, which allows users to specify the style of different song sections (e.g., intro, verse, chorus) using natural language prompts.</li>
+                    <li>short, engaging music generation, which is suitable as background music for short videos. </li>
+                </ul>
+                <p>
+                    Together, this suite of models forms an extensible open-source ecosystem that unifies music understanding, alignment, and controllable generation. We expect these foundation models to serve as strong baselines for future research and to facilitate practical applications in multimodal content production.
+                </p>
+              </div>
+            </div>
+        </div>
+      <div class="column is-6">
+        <div class="content-block" style="justify-content: center; align-items: center;">
+          <h2 class="title is-3 has-text-centered" style="margin-top: 0.5rem;">Framework</h2>
+          <img src="./static/images/overview.png" alt="HeartMuLa Framework" style="width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <h2 class="title is-4 has-text-centered" style="margin-top: 1rem;">Figure 1: The architecture of HeartMuLa.</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section" style="padding-top: 0;">
+  <div class="container is-fluid">
+    <div class="content-block">
+      <h2 class="title is-3 has-text-centered mb-5">Video</h2>
+      <div class="publication-video" style="position:relative; padding: bottom 1px; height:0; overflow:hidden;">
+        <iframe
+          src="https://www.youtube.com/embed/QebE-jVc0Ic?si=oYL2O1vssJQcXvHe"
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+          style="position:absolute; inset:0; margin:auto; width:90%; height:90%;">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 0;">
+  <div class="container is-fluid">
+    <div class="content-block">
+      <h2 class="title is-3 has-text-centered mb-5">Song Generation Comparison</h2>
+      
+      <div class="table-container">
+        <table class="table is-hoverable is-bordered" style="width: 100%;">
+          <thead>
+            <tr>
+              <th style="width: 20%; text-align: center;">Tag (Input)</th>
+              <th style="width: 20%; text-align: center;">Lyrics (Input)</th>
+              <th colspan="3" style="width: 60%; text-align: center;">Generated Audio Samples</th>
+            </tr>
+          </thead>
+
+
+
+          <thead>
+            <tr>
+              <th colspan="5" style="width: 100%; text-align: center;">English</th>
+            </tr>
+          </thead>
+
+
+<!-- english -->
+
+          <!-- 15 -->
+          <tbody>
+            <tr>
+              <!-- 最左侧 Tag 列 -->
+              <td rowspan="2" style="width: 12%; text-align: center; vertical-align: middle;
+                                      background-color: #f5f5f5; font-weight: 600; color: #3273dc;">
+                warm, reflection, pop, Cafe
+              </td>
+
+              <td rowspan="2">
+                <details open>
+                  <summary style="font-weight: bold; cursor: pointer; color: #3273dc; margin-bottom: 10px;">
+                    <span class="icon"><i class="fas fa-magic"></i></span> Click to Collapse Lyrics
+                  </summary>
+                  <div class="content is-small" style="text-align: left; max-height: 280px; overflow-y: auto; line-height: 1.6;">
+                    <strong>[Verse]</strong><br>
+                    Sunlight spills across the scratched oak floor<br>
+                    I’m not checking on the time anymore<br>
+                    Just watching steam spiral up from the tea<br>
+                    A quiet moment meant only for me<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    It’s a slow motion kind of afternoon<br>
+                    Humming along to a coffee shop tune<br>
+                    Let the traffic spin outside the glass<br>
+                    While I let the heavy hours pass<br><br>
+                    
+                    <strong>[Verse]</strong><br>
+                    A stranger smiles as they turn a fresh page<br>
+                    We’re all taking a break from the stage<br>
+                    The scent of roasted beans fills up the air<br>
+                    Settling the dust of a worry or care<br><br>
+                    
+                    <strong>[Bridge]</strong><br>
+                    I used to run until my lungs would burn<br>
+                    Now I’m sitting still to live and learn<br>
+                    Just breathing it in<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    It’s a slow motion kind of afternoon<br>
+                    Humming along to a coffee shop tune<br>
+                    Let the traffic spin outside the glass<br>
+                    While I let the heavy hours pass<br><br>
+                    
+                    <strong>[Outro]</strong><br>
+                    Just warmth in a cup<br>
+                    No need to look up<br>
+                  </div>
+                </details>
+              </td>
+
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Suno v4.5</span>
+                <audio controls><source src="static/audios/suno45/english/15.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Mureka V7.6</span>
+                <audio controls><source src="static/audios/mureka-V7_6/english/15.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">YUE</span>
+                <audio controls><source src="static/audios/yue/english/15.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+
+            <tr>
+              <!-- 第二行同样留出 Tag 列空位，保持列对齐 -->
+              <td style="width: 20%;">
+                <span class="model-tag">DiffRhythm2</span>
+                <audio controls><source src="static/audios/diff-rhythm/english/15.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">ACE-Step</span>
+                <audio controls><source src="static/audios/ace-step/english/15.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">HeartMuLa</span>
+                <audio controls><source src="static/audios/heartmula/english/15.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          </tbody>
+
+          <!-- 7 -->
+          <tbody>
+            <tr>
+              <!-- 最左侧 Tag 列 -->
+              <td rowspan="2" style="width: 12%; text-align: center; vertical-align: middle;
+                                      background-color: #f5f5f5; font-weight: 600; color: #3273dc;">
+                R&B, Keyboard, Regret, drum machine, electric guitar, synthesizer, soft
+              </td>
+
+              <td rowspan="2">
+                <details open>
+                  <summary style="font-weight: bold; cursor: pointer; color: #3273dc; margin-bottom: 10px;">
+                    <span class="icon"><i class="fas fa-magic"></i></span> Click to Collapse Lyrics
+                  </summary>
+                  <div class="content is-small" style="text-align: left; max-height: 280px; overflow-y: auto; line-height: 1.6;">
+                    <strong>[Chorus]</strong><br>
+                    Standing on the podium with lights in my eyes<br>
+                    Finally broke the ceiling and touched the skies<br>
+                    They said I wouldn't make it but here I stand<br>
+                    The whole world is waiting in the palm of my hand<br><br>
+                    
+                    <strong>[Verse]</strong><br>
+                    Sweat on the concrete and blood on the floor<br>
+                    Knocking 'til my knuckles bled on the door<br>
+                    Every time I fell down I got up twice<br>
+                    Paid the heavy toll yeah I paid the price<br><br>
+                    
+                    <strong>[Prechorus]</strong><br>
+                    Now the doubt is fading out<br>
+                    Hear the crowd begin to shout<br>
+                    This is what it's all about<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    I'm a winner baby look at me now<br>
+                    Wearing the gold and taking the bow<br>
+                    Nothing can stop this runaway train<br>
+                    Dancing through the fire and the rain<br><br>
+                    
+                    <strong>[Bridge]</strong><br>
+                    It wasn't luck it was destiny<br>
+                    Unlocking the chains setting me free<br>
+                    Top of the mountain looking down<br>
+                    This is my kingdom this is my town<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    Yeah I'm a winner see the flag unfold<br>
+                    Turning the dust into solid gold<br>
+                    History written in a single day<br>
+                    I did it my own specific way<br><br>
+                    
+                    <strong>[Outro]</strong><br>
+                    Victory tastes sweet<br>
+                    Can't be beat<br>
+
+                  </div>
+                </details>
+              </td>
+
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Suno v4.5</span>
+                <audio controls><source src="static/audios/suno45/english/7.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Mureka V7.6</span>
+                <audio controls><source src="static/audios/mureka-V7_6/english/7.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">YUE</span>
+                <audio controls><source src="static/audios/yue/english/7.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+
+            <tr>
+              <!-- 第二行同样留出 Tag 列空位，保持列对齐 -->
+              <td style="width: 20%;">
+                <span class="model-tag">DiffRhythm2</span>
+                <audio controls><source src="static/audios/diff-rhythm/english/7.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">ACE-Step</span>
+                <audio controls><source src="static/audios/ace-step/english/7.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">HeartMuLa</span>
+                <audio controls><source src="static/audios/heartmula/english/7.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          </tbody>
+
+
+          <!-- 14 -->
+          <tbody>
+            <tr>
+              <!-- 最左侧 Tag 列 -->
+              <td rowspan="2" style="width: 12%; text-align: center; vertical-align: middle;
+                                      background-color: #f5f5f5; font-weight: 600; color: #3273dc;">
+                energetic, electronic, synthesizer, drum machine, self-discovery
+              </td>
+
+              <td rowspan="2">
+                <details open>
+                  <summary style="font-weight: bold; cursor: pointer; color: #3273dc; margin-bottom: 10px;">
+                    <span class="icon"><i class="fas fa-magic"></i></span> Click to Collapse Lyrics
+                  </summary>
+                  <div class="content is-small" style="text-align: left; max-height: 280px; overflow-y: auto; line-height: 1.6;">
+                    <strong>[Verse]</strong><br>
+                    Wired to the grid,I was playing a part<br>
+                    Just a steady signal with a hollow heart<br>
+                    But the neon lights are flashing in my eyes<br>
+                    Cutting through the static and the old disguise<br><br>
+                    
+                    <strong>[Prechorus]</strong><br>
+                    Turn the voltage up,watch the meters redline<br>
+                    I am stepping out of the rigid design<br>
+                    The bass is kicking in,shaking off the rust<br>
+                    Turning all the shadows into diamond dust<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    I’m finding my frequency,loud and clear<br>
+                    Nothing left to hide,nothing left to fear<br>
+                    The rhythm is a mirror showing who I am<br>
+                    Breaking through the walls of the hologram<br>
+                    Yeah,I’m electric,I’m finally me<br>
+                    Dancing on the edge of reality<br><br>
+                    
+                    <strong>[Verse]</strong><br>
+                    Synthesized horizons glowing in the dark<br>
+                    Every single beat is a brand new spark<br>
+                    I don’t need a map for the road ahead<br>
+                    I’ll follow where the pulse of the night is led<br><br>
+                    
+                    <strong>[Bridge]</strong><br>
+                    No more glitches,no more doubt<br>
+                    Let the energy scream out<br>
+                    This is what it’s all about<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    I’m finding my frequency,loud and clear<br>
+                    Nothing left to hide,nothing left to fear<br>
+                    The rhythm is a mirror showing who I am<br>
+                    Breaking through the walls of the hologram<br>
+                    Yeah,I’m electric,I’m finally me<br>
+                    Dancing on the edge of reality<br><br>
+                    
+                    <strong>[Outro]</strong><br>
+                    I am the sound<br>
+                    I am the light<br>
+                    Burning bright<br>
+                  </div>
+                </details>
+              </td>
+
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Suno v4.5</span>
+                <audio controls><source src="static/audios/suno45/english/14.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Mureka V7.6</span>
+                <audio controls><source src="static/audios/mureka-V7_6/english/14.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">YUE</span>
+                <audio controls><source src="static/audios/yue/english/14.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+
+            <tr>
+              <!-- 第二行同样留出 Tag 列空位，保持列对齐 -->
+              <td style="width: 20%;">
+                <span class="model-tag">DiffRhythm2</span>
+                <audio controls><source src="static/audios/diff-rhythm/english/14.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">ACE-Step</span>
+                <audio controls><source src="static/audios/ace-step/english/14.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">HeartMuLa</span>
+                <audio controls><source src="static/audios/heartmula/english/14.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          </tbody>
+
+ 
+          <!-- 17 -->
+          <tbody>
+            <tr>
+              <!-- 最左侧 Tag 列 -->
+              <td rowspan="2" style="width: 12%; text-align: center; vertical-align: middle;
+                                      background-color: #f5f5f5; font-weight: 600; color: #3273dc;">
+                soft, Sad, Ballad, Longing
+              </td>
+
+              <td rowspan="2">
+                <details open>
+                  <summary style="font-weight: bold; cursor: pointer; color: #3273dc; margin-bottom: 10px;">
+                    <span class="icon"><i class="fas fa-magic"></i></span> Click to Collapse Lyrics
+                  </summary>
+                  <div class="content is-small" style="text-align: left; max-height: 280px; overflow-y: auto; line-height: 1.6;">
+                    <strong>[Verse]</strong><br>
+                    The coffee cup is sitting cold upon the sill<br>
+                    The dust motes dancing in the light are standing still<br>
+                    I trace the pattern of the rain against the glass<br>
+                    Just waiting for another lonely hour to pass<br><br>
+                    
+                    <strong>[Prechorus]</strong><br>
+                    And I swear I heard you calling out my name<br>
+                    But it’s just the wind playing its wicked game<br>
+                    Turning whispers into ghosts that look the same<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    I’m reaching out to space that you used to fill<br>
+                    Bargaining with time to just keep it still<br>
+                    If longing was a river I would drown inside<br>
+                    With nowhere left to run and nowhere left to hide<br>
+                    I’m missing you in ways I can’t describe<br><br>
+                    
+                    <strong>[Verse]</strong><br>
+                    Your jacket’s hanging by the door just like before<br>
+                    A silent sentry to the life we have no more<br>
+                    I try to read the book you left turned on its face<br>
+                    But every word just takes me back to your embrace<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    I’m reaching out to space that you used to fill<br>
+                    Bargaining with time to just keep it still<br>
+                    If longing was a river I would drown inside<br>
+                    With nowhere left to run and nowhere left to hide<br>
+                    I’m missing you in ways I can’t describe<br><br>
+                    
+                    <strong>[Outro]</strong><br>
+                    So I’ll turn out the light and close my eyes<br>
+                    And meet you in the quiet where the daylight dies<br>
+                  </div>
+                </details>
+              </td>
+
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Suno v4.5</span>
+                <audio controls><source src="static/audios/suno45/english/17.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Mureka V7.6</span>
+                <audio controls><source src="static/audios/mureka-V7_6/english/17.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">YUE</span>
+                <audio controls><source src="static/audios/yue/english/17.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+
+            <tr>
+              <!-- 第二行同样留出 Tag 列空位，保持列对齐 -->
+              <td style="width: 20%;">
+                <span class="model-tag">DiffRhythm2</span>
+                <audio controls><source src="static/audios/diff-rhythm/english/17.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">ACE-Step</span>
+                <audio controls><source src="static/audios/ace-step/english/17.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">HeartMuLa</span>
+                <audio controls><source src="static/audios/heartmula/english/17.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          </tbody>
+
+
+
+
+
+          <thead>
+            <tr>
+              <th colspan="5" style="width: 100%; text-align: center;">Chinese</th>
+            </tr>
+          </thead>
+
+
+<!-- chinese -->
+          <!-- 19 -->
+
+
+
+          <tbody>
+            <tr>
+              <!-- 最左侧 Tag 列 -->
+              <td rowspan="2" style="width: 12%; text-align: center; vertical-align: middle;
+                                      background-color: #f5f5f5; font-weight: 600; color: #3273dc;">
+                meditation, faith, acoustic, peaceful
+              </td>
+          
+              <td rowspan="2">
+                <details open>
+                  <summary style="font-weight: bold; cursor: pointer; color: #3273dc; margin-bottom: 10px;">
+                    <span class="icon"><i class="fas fa-magic"></i></span> Click to Collapse Lyrics
+                  </summary>
+                  <div class="content is-small" style="text-align: left; max-height: 280px; overflow-y: auto; line-height: 1.6;">
+                    <strong>[Verse]</strong><br>
+                    闭上双眼让喧嚣都停摆<br>
+                    窗外的风轻轻穿过那片海<br>
+                    心里的尘埃慢慢落下来<br>
+                    此刻只有呼吸还在<br><br>
+                    
+                    <strong>[Prechorus]</strong><br>
+                    不需要寻找繁复的答案<br>
+                    只需要点亮微弱的烛光<br>
+                    某种力量在悄然生长<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    在一片静默里我听见应许<br>
+                    像晨曦温柔洒满了大地<br>
+                    信念是无声却坚定的言语<br>
+                    灵魂终于寻回了栖息地<br><br>
+                    
+                    <strong>[Verse]</strong><br>
+                    纯粹的弦音在空气中摇曳<br>
+                    指尖下流淌过岁月的更迭<br>
+                    放下了那些沉重的纠结<br>
+                    在这瞬间与自己和解<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    在一片静默里我听见应许<br>
+                    像晨曦温柔洒满了大地<br>
+                    不用去怀疑未知的结局<br>
+                    每一步都走在光里<br><br>
+                    
+                    <strong>[Outro]</strong><br>
+                    如风过境如此宁静<br>
+               
+                  </div>
+                </details>
+              </td>
+          
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Suno v4.5</span>
+                <audio controls><source src="static/audios/suno45/chinese/19.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Mureka V7.6</span>
+                <audio controls><source src="static/audios/mureka-V7_6/chinese/19.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">YUE</span>
+                <audio controls><source src="static/audios/yue/chinese/19.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          
+            <tr>
+              <!-- 第二行同样留出 Tag 列空位，保持列对齐 -->
+              <td style="width: 20%;">
+                <span class="model-tag">DiffRhythm2</span>
+                <audio controls><source src="static/audios/diff-rhythm/chinese/19.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">ACE-Step</span>
+                <audio controls><source src="static/audios/ace-step/chinese/19.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">HeartMuLa</span>
+                <audio controls><source src="static/audios/heartmula/chinese/19.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          </tbody>
+
+
+
+          <!-- 20 -->
+
+          
+          <tbody>
+            <tr>
+              <!-- 最左侧 Tag 列 -->
+              <td rowspan="2" style="width: 12%; text-align: center; vertical-align: middle;
+                                      background-color: #f5f5f5; font-weight: 600; color: #3273dc;">
+                wedding, Piano, Strings, acoustic guitar, pop, Romantic
+              </td>
+          
+              <td rowspan="2">
+                <details open>
+                  <summary style="font-weight: bold; cursor: pointer; color: #3273dc; margin-bottom: 10px;">
+                    <span class="icon"><i class="fas fa-magic"></i></span> Click to Collapse Lyrics
+                  </summary>
+                  <div class="content is-small" style="text-align: left; max-height: 280px; overflow-y: auto; line-height: 1.6;">
+                    <strong>[Intro]</strong><br><br>
+
+                    <strong>[Verse]</strong><br>
+                    我在云端 守着孤单的白<br>
+                    你在深渊 卷起深邃的蓝<br>
+                    遥不可及的距离 隔着万水千山<br>
+                    却在视线的尽头 彼此纠缠<br><br>
+                    
+                    <strong>[Prechorus]</strong><br>
+                    夕阳坠落 烧红了半个天际<br>
+                    这是我为你 准备的嫁衣<br>
+                    屏住呼吸 等待奇迹<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    当天空终于沉入大海的胸怀<br>
+                    亿万年的等待 此刻都释怀<br>
+                    分不清是云坠落 还是浪涌上来<br>
+                    整个世界 只有我们相爱<br><br>
+                    
+                    <strong>[Bridge]</strong><br>
+                    地平线不再是 阻碍的界限<br>
+                    而是我们 紧紧相连的指尖<br>
+                    倒影里 刻下永远<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    当天空终于沉入大海的胸怀<br>
+                    亿万年的等待 此刻都释怀<br>
+                    分不清是云坠落 还是浪涌上来<br>
+                    在这片蔚蓝里 永不分开<br><br>
+                    
+                    <strong>[Outro]</strong><br>
+                  </div>
+                </details>
+              </td>
+          
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Suno v4.5</span>
+                <audio controls><source src="static/audios/suno45/chinese/20.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Mureka V7.6</span>
+                <audio controls><source src="static/audios/mureka-V7_6/chinese/20.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">YUE</span>
+                <audio controls><source src="static/audios/yue/chinese/20.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          
+            <tr>
+              <!-- 第二行同样留出 Tag 列空位，保持列对齐 -->
+              <td style="width: 20%;">
+                <span class="model-tag">DiffRhythm2</span>
+                <audio controls><source src="static/audios/diff-rhythm/chinese/20.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">ACE-Step</span>
+                <audio controls><source src="static/audios/ace-step/chinese/20.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">HeartMuLa</span>
+                <audio controls><source src="static/audios/heartmula/chinese/20.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          </tbody>
+
+
+          <!-- 11 -->
+          <tbody>
+            <tr>
+              <!-- 最左侧 Tag 列 -->
+              <td rowspan="2" style="width: 12%; text-align: center; vertical-align: middle;
+                                      background-color: #f5f5f5; font-weight: 600; color: #3273dc;">
+                Sad, Regret, electric guitar, drums, Piano, emotional
+              </td>
+          
+              <td rowspan="2">
+                <details open>
+                  <summary style="font-weight: bold; cursor: pointer; color: #3273dc; margin-bottom: 10px;">
+                    <span class="icon"><i class="fas fa-magic"></i></span> Click to Collapse Lyrics
+                  </summary>
+                  <div class="content is-small" style="text-align: left; max-height: 280px; overflow-y: auto; line-height: 1.6;">
+                    <strong>[Verse]</strong><br>
+                    街角的冷风还在吹散昨夜的尘埃<br>
+                    我傻傻站在原地等待一个不可能的未来<br>
+                    时钟转了一圈又一圈终于停摆<br>
+                    仿佛在嘲笑我对你戒不掉的依赖<br><br>
+                    
+                    <strong>[Prechorus]</strong><br>
+                    如果是梦为什么迟迟醒不来<br>
+                    如果是痛为什么无法去释怀<br>
+                    明明说过无论如何绝不分开<br>
+                    最后却是我亲手把你推向人海<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    这结局太过苍白谁都没能幸免<br>
+                    思念像一场海啸瞬间淹没了视线<br>
+                    声嘶力竭的呐喊你根本听不见<br>
+                    只有沉默在回应我迟到的抱歉<br>
+                    如果能重来哪怕只是一瞬间<br>
+                    绝不让你消失在我的世界<br><br>
+                    
+                    <strong>[Verse]</strong><br>
+                    手机里存着那些舍不得删的照片<br>
+                    笑容太刺眼疯狂灼烧着我的双眼<br>
+                    曾经滚烫的誓言如今变成了谎言<br>
+                    每一句都刺在心上最痛的边缘<br><br>
+                    
+                    <strong>[Bridge]</strong><br>
+                    以为只要转身就能彻底遗忘<br>
+                    却在深夜被寂寞狠狠捆绑<br>
+                    这空荡荡的心房再也无法安放<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    这结局太过苍白谁都没能幸免<br>
+                    思念像一场海啸瞬间淹没了视线<br>
+                    声嘶力竭的呐喊你根本听不见<br>
+                    只有沉默在回应我迟到的抱歉<br>
+                    如果能重来哪怕只是一瞬间<br>
+                    绝不让你消失在我的世界<br><br>
+                    
+                    <strong>[Outro]</strong><br>
+                    原来爱是一场无法回头的流浪<br>
+                    只剩下我一个人在原地绝望<br>
+                  </div>
+                </details>
+              </td>
+          
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Suno v4.5</span>
+                <audio controls><source src="static/audios/suno45/chinese/11.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Mureka V7.6</span>
+                <audio controls><source src="static/audios/mureka-V7_6/chinese/11.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">YUE</span>
+                <audio controls><source src="static/audios/yue/chinese/11.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          
+            <tr>
+              <!-- 第二行同样留出 Tag 列空位，保持列对齐 -->
+              <td style="width: 20%;">
+                <span class="model-tag">DiffRhythm2</span>
+                <audio controls><source src="static/audios/diff-rhythm/chinese/11.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">ACE-Step</span>
+                <audio controls><source src="static/audios/ace-step/chinese/11.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">HeartMuLa</span>
+                <audio controls><source src="static/audios/heartmula/chinese/11.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          </tbody>
+
+
+          <!-- 13 -->
+
+          <tbody>
+            <tr>
+              <!-- 最左侧 Tag 列 -->
+              <td rowspan="2" style="width: 12%; text-align: center; vertical-align: middle;
+                                      background-color: #f5f5f5; font-weight: 600; color: #3273dc;">
+                Walking, acoustic guitar, Strings, hope, hopeful
+              </td>
+          
+              <td rowspan="2">
+                <details open>
+                  <summary style="font-weight: bold; cursor: pointer; color: #3273dc; margin-bottom: 10px;">
+                    <span class="icon"><i class="fas fa-magic"></i></span> Click to Collapse Lyrics
+                  </summary>
+                  <div class="content is-small" style="text-align: left; max-height: 280px; overflow-y: auto; line-height: 1.6;">
+                    <strong>[Verse]</strong><br>
+                    脚下的泥泞终于慢慢变干<br>
+                    穿过了森林前方是蔚蓝<br>
+                    口袋里装着昨天的孤单<br>
+                    随着步伐一点点飘散<br><br>
+                    
+                    <strong>[Prechorus]</strong><br>
+                    风吹动了衣摆<br>
+                    光穿透了阴霾<br>
+                    不用去管终点还有多远<br>
+                    这一刻只有自在<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    一步又一步走出长夜的灰暗<br>
+                    去拥抱那久违的灿烂<br>
+                    路还在延伸哪怕曲折蜿蜒<br>
+                    相信最好的风景就在下一站<br><br>
+                    
+                    <strong>[Verse]</strong><br>
+                    路边的野花也在努力盛开<br>
+                    像是在庆祝这新的期待<br>
+                    呼吸着自由自在的节拍<br>
+                    所有阴影都被阳光覆盖<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    一步又一步走出长夜的灰暗<br>
+                    去拥抱那久违的灿烂<br>
+                    路还在延伸哪怕曲折蜿蜒<br>
+                    相信最好的风景就在下一站<br><br>
+                    
+                    <strong>[Outro]</strong><br>
+                    不停歇的脚步是给未来最好的礼物<br>
+                  </div>
+                </details>
+              </td>
+          
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Suno v4.5</span>
+                <audio controls><source src="static/audios/suno45/chinese/13.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Mureka V7.6</span>
+                <audio controls><source src="static/audios/mureka-V7_6/chinese/13.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">YUE</span>
+                <audio controls><source src="static/audios/yue/chinese/13.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          
+            <tr>
+              <!-- 第二行同样留出 Tag 列空位，保持列对齐 -->
+              <td style="width: 20%;">
+                <span class="model-tag">DiffRhythm2</span>
+                <audio controls><source src="static/audios/diff-rhythm/chinese/13.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">ACE-Step</span>
+                <audio controls><source src="static/audios/ace-step/chinese/13.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">HeartMuLa</span>
+                <audio controls><source src="static/audios/heartmula/chinese/13.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          </tbody>
+
+          <thead>
+            <tr>
+              <th colspan="5" style="width: 100%; text-align: center;">Japanese</th>
+            </tr>
+          </thead>
+
+
+<!-- japanese -->
+          <!-- 4 -->
+          <tbody>
+            <tr>
+              <!-- 最左侧 Tag 列 -->
+              <td rowspan="2" style="width: 12%; text-align: center; vertical-align: middle;
+                                      background-color: #f5f5f5; font-weight: 600; color: #3273dc;">
+                synthesizer, drum machine, powerful, epic, Keyboard, electronic
+              </td>
+
+              <td rowspan="2">
+                <details open>
+                  <summary style="font-weight: bold; cursor: pointer; color: #3273dc; margin-bottom: 10px;">
+                    <span class="icon"><i class="fas fa-magic"></i></span> Click to Collapse Lyrics
+                  </summary>
+                  <div class="content is-small" style="text-align: left; max-height: 280px; overflow-y: auto; line-height: 1.6;">
+                    <strong>[Intro]</strong><br><br>
+
+                    <strong>[Verse]</strong><br>
+                    メニューの写真を遥かに超えて<br>
+                    運ばれてきた茶色い要塞<br>
+                    テーブルが重さで悲鳴を上げる<br>
+                    私の胃袋も震え出した<br><br>
+                    
+                    <strong>[Prechorus]</strong><br>
+                    顎が外れる覚悟を決めて<br>
+                    滴るソースを受け止めろ<br>
+                    カロリーなんて気にするな<br>
+                    今夜は無礼講さ<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    スーパービッグハンバーガー！<br>
+                    肉と肉が積み重なる摩天楼<br>
+                    とろけるチーズのナイアガラ<br>
+                    夢も希望も全部挟んで<br>
+                    豪快にかぶりつけ<br><br>
+                    
+                    <strong>[Verse]</strong><br>
+                    片手じゃとても持てない質量<br>
+                    溢れ出す肉汁の洪水<br>
+                    ピクルスが隙間から逃げ出した<br>
+                    野性に戻る瞬間さ<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    スーパービッグハンバーガー！<br>
+                    肉と肉が積み重なる摩天楼<br>
+                    とろけるチーズのナイアガラ<br>
+                    夢も希望も全部挟んで<br>
+                    豪快にかぶりつけ<br><br>
+                    
+                    <strong>[Outro]</strong><br>
+                    ああ、幸せの重み<br>
+                    もう動けないよ<br>
+                  </div>
+                </details>
+              </td>
+
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Suno v4.5</span>
+                <audio controls><source src="static/audios/suno45/japanese/4.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Mureka V7.6</span>
+                <audio controls><source src="static/audios/mureka-V7_6/japanese/4.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">YUE</span>
+                <audio controls><source src="static/audios/yue/japanese/4.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+
+            <tr>
+              <!-- 第二行同样留出 Tag 列空位，保持列对齐 -->
+              <td style="width: 20%;">
+                <span class="model-tag">DiffRhythm2</span>
+                <audio controls><source src="static/audios/diff-rhythm/japanese/4.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">ACE-Step</span>
+                <audio controls><source src="static/audios/ace-step/japanese/4.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">HeartMuLa</span>
+                <audio controls><source src="static/audios/heartmula/japanese/4.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          </tbody>
+
+
+
+          <thead>
+            <tr>
+              <th colspan="5" style="width: 100%; text-align: center;">Korean</th>
+            </tr>
+          </thead>
+
+
+<!-- korean -->
+          <!-- 5 -->
+          <tbody>
+            <tr>
+              <!-- 最左侧 Tag 列 -->
+              <td rowspan="2" style="width: 12%; text-align: center; vertical-align: middle;
+                                      background-color: #f5f5f5; font-weight: 600; color: #3273dc;">
+                energetic, drums, driving, rock, electric guitar
+              </td>
+
+              <td rowspan="2">
+                <details open>
+                  <summary style="font-weight: bold; cursor: pointer; color: #3273dc; margin-bottom: 10px;">
+                    <span class="icon"><i class="fas fa-magic"></i></span> Click to Collapse Lyrics
+                  </summary>
+                  <div class="content is-small" style="text-align: left; max-height: 280px; overflow-y: auto; line-height: 1.6;">
+                    <strong>[Intro]</strong><br>
+                    심장이 타는 냄새가 나<br><br>
+                    
+                    <strong>[Verse]</strong><br>
+                    차가운 레일 위를 긁어대는 소리<br>
+                    마찰열이 내 혈관을 태우고 있어<br>
+                    어두운 터널 따위 그냥 씹어삼켜<br>
+                    뒤를 돌아보는 건 약해빠진 짓이야<br><br>
+                    
+                    <strong>[Prechorus]</strong><br>
+                    속도계의 바늘은 이미 Red Zone<br>
+                    경고음은 리듬이 돼 더 크게 울려<br>
+                    준비는 끝났어 미친 듯이 밟아<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    폭주하는 강철의 짐승처럼<br>
+                    이 밤의 적막을 찢어버려<br>
+                    중력을 거스른 이 궤도 위에서<br>
+                    나는 오직 앞만 보고 달려가<br><br>
+                    
+                    <strong>[Bridge]</strong><br>
+                    브레이크는 처음부터 없었어<br>
+                    충돌한다 해도 상관없어<br>
+                    끝까지 가볼 거야 재가 될 때까지<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    폭주하는 강철의 짐승처럼<br>
+                    이 밤의 적막을 찢어버려<br>
+                    중력을 거스른 이 궤도 위에서<br>
+                    나는 멈추지 않는 폭풍이야<br>
+                  </div>
+                </details>
+              </td>
+
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Suno v4.5</span>
+                <audio controls><source src="static/audios/suno45/korean/5.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Mureka V7.6</span>
+                <audio controls><source src="static/audios/mureka-V7_6/korean/5.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">YUE</span>
+                <audio controls><source src="static/audios/yue/korean/5.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+
+            <tr>
+              <!-- 第二行同样留出 Tag 列空位，保持列对齐 -->
+              <td style="width: 20%;">
+                <span class="model-tag">DiffRhythm2</span>
+                <audio controls><source src="static/audios/diff-rhythm/korean/5.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">ACE-Step</span>
+                <audio controls><source src="static/audios/ace-step/korean/5.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">HeartMuLa</span>
+                <audio controls><source src="static/audios/heartmula/korean/5.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          </tbody>
+
+
+
+          <thead>
+            <tr>
+              <th colspan="5" style="width: 100%; text-align: center;">Spanish</th>
+            </tr>
+          </thead>
+
+
+<!-- spanish -->
+          <!-- 7 -->
+          <tbody>
+            <tr>
+              <!-- 最左侧 Tag 列 -->
+              <td rowspan="2" style="width: 12%; text-align: center; vertical-align: middle;
+                                      background-color: #f5f5f5; font-weight: 600; color: #3273dc;">
+                Cafe, Regret, Keyboard, synthesizer, drum machine, R&B, electric guitar
+              </td>
+
+              <td rowspan="2">
+                <details open>
+                  <summary style="font-weight: bold; cursor: pointer; color: #3273dc; margin-bottom: 10px;">
+                    <span class="icon"><i class="fas fa-magic"></i></span> Click to Collapse Lyrics
+                  </summary>
+                  <div class="content is-small" style="text-align: left; max-height: 280px; overflow-y: auto; line-height: 1.6;">
+                    <strong>[Intro]</strong><br>
+                    Luces de neón parpadeando bajo<br>
+                    Un zumbido digital en el rincón<br><br>
+                    
+                    <strong>[Verse]</strong><br>
+                    Soy la máquina de cromo y luz<br>
+                    Mirando desde la esquina,vi su cruz<br>
+                    El café se enfría en la mesa dos<br>
+                    Mientras el silencio les dice adiós<br><br>
+                    
+                    <strong>[Prechorus]</strong><br>
+                    Quise cambiar el destino con una canción<br>
+                    Mezclar un ritmo alegre en su conversación<br>
+                    Pero mis circuitos fallaron esa vez<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    Oh,culpa de mis cables,error fatal<br>
+                    Solté una balada triste,un final<br>
+                    La guitarra eléctrica lloró por mí<br>
+                    Y vi cómo el amor salía de aquí<br>
+                    Solo soy metal con arrepentimiento<br><br>
+                    
+                    <strong>[Verse]</strong><br>
+                    La moneda sigue atrapada en mi interior<br>
+                    Como un recuerdo pesado,un dolor<br>
+                    El sintetizador suena en soledad<br>
+                    Repitiendo el eco de esa verdad<br><br>
+                    
+                    <strong>[Chorus]</strong><br>
+                    Oh,culpa de mis cables,error fatal<br>
+                    Solté una balada triste,un final<br>
+                    La guitarra eléctrica lloró por mí<br>
+                    Y vi cómo el amor salía de aquí<br><br>
+                    
+                    <strong>[Outro]</strong><br>
+                    Sistema apagado<br>
+                    Perdón<br>
+                    Lo siento tanto<br>
+                  </div>
+                </details>
+              </td>
+
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Suno v4.5</span>
+                <audio controls><source src="static/audios/suno45/spanish/7.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">Mureka V7.6</span>
+                <audio controls><source src="static/audios/mureka-V7_6/spanish/7.mp3" type="audio/mpeg"></audio>
+              </td>
+              <!-- <td style="width: 20%; background-color: #fafafa;">
+                <span class="model-tag">YUE</span>
+                <audio controls><source src="static/audios/yue/spanish/7.mp3" type="audio/mpeg"></audio>
+              </td> -->
+              <td style="width: 20%; text-align: center; vertical-align: middle;">
+                <span class="model-tag">YUE</span>
+                <br>
+                <strong style="color: #999;">Not supported</strong>
+              </td>
+            </tr>
+
+            <tr>
+              <!-- 第二行同样留出 Tag 列空位，保持列对齐 -->
+              <td style="width: 20%;">
+                <span class="model-tag">DiffRhythm2</span>
+                <audio controls><source src="static/audios/diff-rhythm/spanish/7.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">ACE-Step</span>
+                <audio controls><source src="static/audios/ace-step/spanish/7.mp3" type="audio/mpeg"></audio>
+              </td>
+              <td style="width: 20%;">
+                <span class="model-tag">HeartMuLa</span>
+                <audio controls><source src="static/audios/heartmula/spanish/7.mp3" type="audio/mpeg"></audio>
+              </td>
+            </tr>
+          </tbody>
+
+
+
+
+
+
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 0;">
+  <div class="container is-fluid">
+    <div class="columns is-stretch">
+      <div class="column is-6">
+        <div class="content-block">
+          <h2 class="title is-3">Related Links</h2>
+          <div class="content">
+            <ul style="list-style-type: disc; margin-left: 1.5rem;">
+              <li style="margin-bottom: 10px;"><a href="https://arxiv.org/abs/2310.00704"><strong>UniAudio: </strong> An Audio Foundation Model Toward Universal Audio Generation</a></li>
+              <li style="margin-bottom: 10px;"><a href="https://arxiv.org/abs/2504.10344"><strong>ALMTokenizer: </strong>A Low-bitrate and Semantic-rich Audio Codec Tokenizer for Audio Language Modeling</a></li>
+              <li style="margin-bottom: 10px;"><a href="https://arxiv.org/abs/2406.02328"><strong>SimpleSpeech: </strong>Towards Simple and Efficient Text-to-Speech with Scalar Latent Transformer Diffusion Models</a></li>
+            </ul>
+            <p style="margin-top: 1rem;">Check out our <a href="https://github.com/HeartMuLa">GitHub repository</a> for more details.</p>
+          </div>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="content-block">
+          <h2 class="title is-3">BibTeX</h2>
+          <pre style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; font-size: 0.8em;"><code>@article{heartmula2026,
+  author    = {HeartMuLa Teams},
+  title     = {HeartMuLa: A Family of Open Sourced Music Foundation Models},
+  journal   = {arXiv preprint},
+  year      = {2026},
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+</body>
+</html>
